@@ -11,7 +11,7 @@ const Drawer = createDrawerNavigator();
 function DrawerNavigator() {
     return (
         <Drawer.Navigator
-            drawerContent={(props) => <CustomDrawer {...props} />}
+            drawerContent={(props) => <CustomDrawer  {...props} />}
             screenOptions={{
                 headerShown: false,
                 drawerActiveBackgroundColor: COLORS.white,

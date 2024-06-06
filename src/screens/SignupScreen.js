@@ -13,7 +13,7 @@ import { StatusBar } from "expo-status-bar";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { Ionicons } from 'react-native-vector-icons';
 import { COLORS, IMGS } from '../constants';
-import { AuthService, DatabaseService } from '../services';
+import { DatabaseService, AuthService } from '../services';
 import { UserProfile } from '../models';
 
 var width1;
@@ -30,6 +30,7 @@ const SignupScreen = ({ navigation }) => {
     const [error, setError] = useState({});
 
     const databaseService = new DatabaseService();
+    const authService = new AuthService();
 
     const validateForm = () => {
         let error = {};
@@ -56,7 +57,7 @@ const SignupScreen = ({ navigation }) => {
             console.log('Password:', confirmPassword);
 
             try {
-                const userCredential = await AuthService.signup(email, password);
+                const userCredential = await authService.signup(email, password);
                 if (userCredential != null) {
                     const userProfile = new UserProfile({
                         uid: userCredential.user.uid,

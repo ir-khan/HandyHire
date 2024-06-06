@@ -9,12 +9,15 @@ import { AuthService } from '../services';
 const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => {
+
     const [isLoggedIn, setIsLoggedIn] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const checkUserLoggedIn = async () => {
+    const authService = new AuthService();
+
+    const checkUserLoggedIn = () => {
         try {
-            const user = await AuthService.getCurrentUser();
+            const user = authService.getCurrentUser;
             setIsLoggedIn(!!user);
         } catch (error) {
             console.log(error);
@@ -25,6 +28,11 @@ const AuthNavigator = () => {
 
     useEffect(() => {
         checkUserLoggedIn();
+        // const unsubscribe = authService.authStateChangesListener((user) => {
+        //     setIsLoggedIn(!!user);
+        // });
+
+        // return () => unsubscribe();
     }, []);
 
     if (loading) {

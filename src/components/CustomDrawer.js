@@ -7,16 +7,28 @@ import {
 } from '@react-navigation/drawer';
 import { Ionicons } from 'react-native-vector-icons';
 import { COLORS, IMGS, ROUTES } from '../constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import AuthService from '../services/AuthService';
+
 
 const CustomDrawer = (props) => {
-    const navigation = useNavigation();
     const [worker, setWorker] = useState(false);
+    const { navigation } = props;
+
+    //const navigation = useNavigation();
+    //console.log(props);
+
+    const authService = new AuthService();
 
     const logOut = async () => {
-        await AsyncStorage.setItem("isLoggedIn", JSON.stringify(false));
-        navigation.navigate(ROUTES.LOGIN);
+        const result = await authService.logout();
+        console.log(result);
+        if (result == true) {
+            //navigation.navigate(ROUTES.LOGIN)
+            navigation.reset({
+                index: 0,
+                routes: [{ name: ROUTES.LOGIN }],
+            });
+        }
     };
 
     return (

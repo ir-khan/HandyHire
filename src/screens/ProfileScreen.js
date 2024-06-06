@@ -8,13 +8,20 @@ import { AuthService, MediaService, DatabaseService } from '../services';
 const ProfileScreen = ({ navigation }) => {
 
   const [avatarSource, setAvatarSource] = useState(IMGS.avatar);
+  const [username, setUsername] = useState('');
+
+  const authService = new AuthService();
 
   const getUserID = async () => {
-    const user = await AuthService.getCurrentUser();
-    return user.uid;
+    const user = await authService.getUser();
+    if (user) {
+      console.log(user);
+      setUsername(user);
+    }
   };
 
-  console.log("1"+getUserID());
+  getUserID();
+  console.log(username);
 
   const handleEditProfile = () => {
     navigation.navigate(ROUTES.EDITPROFILE);

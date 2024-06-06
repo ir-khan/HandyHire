@@ -3,16 +3,25 @@ import {
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword, 
     sendPasswordResetEmail, 
-    onAuthStateChanged 
+    onAuthStateChanged,
 } from '../firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserProfile } from '../models';
 
 class AuthService {
-    static async login(email, password) {
+
+    #user;
+
+    getUser() {
+        return this.#user;
+    };
+
+    async login(email, password) {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             if (userCredential) {
                 await AsyncStorage.setItem('user', JSON.stringify(userCredential.user));
+                this.#user = userCredential.user; // Set the private variable
             }
             return userCredential;
         } catch (error) {
@@ -21,11 +30,12 @@ class AuthService {
         return null;
     }
 
-    static async signup(email, password) {
+    async signup(email, password) {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             if (userCredential) {
                 await AsyncStorage.setItem('user', JSON.stringify(userCredential.user));
+                this.#user = userCredential.user; // Set the private variable
             }
             return userCredential;
         } catch (error) {
@@ -34,10 +44,11 @@ class AuthService {
         return null;
     }
 
-    static async logout() {
+    async logout() {
         try {
             await auth.signOut();
             await AsyncStorage.removeItem('user');
+            this.#user = null; // Clear the private variable
             return true;
         } catch (error) {
             console.log(error.message);
@@ -45,7 +56,7 @@ class AuthService {
         return false;
     }
 
-    static async forgotPassword(email) {
+    async forgotPassword(email) {
         try {
             await sendPasswordResetEmail(auth, email);
             return true;
@@ -55,17 +66,14 @@ class AuthService {
         return null;
     }
 
-    static async getCurrentUser() {
+    async getCurrentUser() {
         try {
             const user = await AsyncStorage.getItem('user');
             if (user) {
-                //console.log(user)
-                const data = JSON.parse(user);
-                //console.log(data);
-                const id = data.uid;
-                //console.log(id)
-                //return user;
-                return JSON.parse(user);
+                const parsedUser = JSON.parse(user);
+                this.#user = UserProfile.fromJson(parsedUser);
+                console.log(this.#user);
+                return this.#user;
             }
         } catch (error) {
             console.log(error.message);
@@ -73,12 +81,14 @@ class AuthService {
         return null;
     }
 
-    static authStateChangesListener(callback) {
+    authStateChangesListener(callback) {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 await AsyncStorage.setItem('user', JSON.stringify(user));
+                this.#user = user; // Set the private variable
             } else {
                 await AsyncStorage.removeItem('user');
+                this.#user = null; // Clear the private variable
             }
             callback(user);
         });

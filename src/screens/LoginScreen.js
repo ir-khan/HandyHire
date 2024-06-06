@@ -26,6 +26,8 @@ const LoginScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(true);
     const [error, setError] = useState({});
 
+    const authService = new AuthService(); 
+
     const validateForm = () => {
         let error = {};
 
@@ -43,7 +45,7 @@ const LoginScreen = ({ navigation }) => {
             console.log('Password:', password);
 
             try {
-                const userCredential = await AuthService.login(email, password);
+                const userCredential = await authService.login(email, password);
                 if (userCredential != null) {
                     // Navigate to Login screen
                     navigation.navigate(ROUTES.DRAWER);
