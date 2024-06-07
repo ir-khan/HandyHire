@@ -16,7 +16,7 @@ const CustomDrawer = (props) => {
     const { navigation } = props;
 
     const [worker, setWorker] = useState(false);
-    const [avatarSource, setAvatarSource] = useState(IMGS.avatar);
+    const [imageURL, setImageURL] = useState(null);
     const [userData, setUserData] = useState('');
 
     const authService = new AuthService();
@@ -33,6 +33,7 @@ const CustomDrawer = (props) => {
         const data = await dataBaseSevice.getUserProfile();
         if (data) {
             setUserData(data);
+            setImageURL(data.pfpURL);
         }
     };
 
@@ -50,7 +51,7 @@ const CustomDrawer = (props) => {
         <DrawerContentScrollView {...props}>
             <View style={styles.profileContainer}>
                 <Text style={styles.name}>{userData.userName}</Text>
-                <Image source={IMGS.pfp} style={styles.image} />
+                <Image source={imageURL ? { uri: imageURL} : IMGS.avatar} style={styles.image} />
             </View>
             <TouchableOpacity style={styles.workerTextContainer} onPress={() => { setWorker(!worker) }}>
                 <Text style={styles.workerText}>{worker ? 'Switch to buyer' : 'Switch to seller'}</Text>

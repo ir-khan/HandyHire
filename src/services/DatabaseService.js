@@ -1,5 +1,5 @@
 import { database } from "../firebase";
-import { doc, setDoc, getDoc, collection } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, collection } from "firebase/firestore";
 import { UserProfile } from '../models';
 import AuthService from "./AuthService";
 class DatabaseService {
@@ -54,7 +54,7 @@ class DatabaseService {
 
     async getUserProfiles() {
         try {
-            const querySnapshot = await getDocs(this.#usersCollection);
+            const querySnapshot = await getDoc(this.#usersCollection);
             const userProfiles = [];
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
@@ -73,8 +73,7 @@ class DatabaseService {
             const userDoc = doc(this.#usersCollection, userProfile.uid);
             await updateDoc(userDoc, {
                 fullName: userProfile.fullName,
-                userName: userProfile.userName,
-                email: userProfile.email,
+                pfpURL: userProfile.pfpURL,
                 // Add other profile fields here
             });
             console.log("User profile updated successfully");

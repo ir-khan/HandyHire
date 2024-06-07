@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { CustomDrawerButton } from '../components';
 import { COLORS, IMGS, ROUTES } from '../constants';
 import { FontAwesome } from 'react-native-vector-icons';
-import { AuthService, MediaService, DatabaseService } from '../services';
+import { DatabaseService } from '../services';
 
 const ProfileScreen = ({ navigation }) => {
 
-  const [avatarSource, setAvatarSource] = useState(IMGS.avatar);
+  const [imageURL, setImageURL] = useState(null);
   const [userData, setUserData] = useState('');
 
   const dataBaseSevice = new DatabaseService();
@@ -19,38 +19,14 @@ const ProfileScreen = ({ navigation }) => {
 
   const getUserData = async () => {
     const data = await dataBaseSevice.getUserProfile();
-    if (data) {
+    if (data && data.pfpURL) {
       setUserData(data);
+      setImageURL(data.pfpURL);
     }
   };
 
   const handleEditProfile = () => {
     navigation.navigate(ROUTES.EDITPROFILE);
-  };
-
-  const selectImage = () => {
-    MediaService.selectImageFromGallery((source) => {
-      setAvatarSource({ uri: source.assets[0].uri });
-    });
-  };
-
-  const takeNewPhoto = () => {
-    MediaService.takePhoto((source) => {
-      setAvatarSource({ uri: source.assets[0].uri });
-    });
-  };
-
-
-  const handleImagePress = () => {
-    Alert.alert(
-      'Select Image',
-      'Choose the image source',
-      [
-        { text: 'Select from Gallery', onPress: selectImage, },
-        { text: 'Take Photo', onPress: takeNewPhoto },
-      ],
-      { cancelable: false }
-    );
   };
 
   return (
@@ -59,18 +35,21 @@ const ProfileScreen = ({ navigation }) => {
         <CustomDrawerButton navigation={navigation} />
         <Text style={styles.appBarText}>Profile</Text>
         <View style={{ width: 35 }}>
-          <TouchableOpacity onPress={handleEditProfile}>
+          <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
             <FontAwesome name="edit" size={30} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
       </View>
       <ScrollView style={styles.body}>
         <View>
-          <TouchableOpacity onPress={handleImagePress}>
-            <Image source={avatarSource} style={styles.avatar} />
-          </TouchableOpacity>
+        <Image source={imageURL ? { uri: imageURL } : IMGS.avatar} style={styles.avatar} />
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.labelData}>{userData.fullName}</Text>
+          <Text style={styles.label}>Email</Text>
+          <Text style={styles.labelData}>{userData.email}</Text>
+          <Text style={styles.label}>Username</Text>
+          <Text style={styles.labelData}>{userData.userName}</Text>
         </View>
-        <View></View>
       </ScrollView>
     </View>
   );
@@ -98,9 +77,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.primary,
   },
+  editButton: {
+    top: -2.5,
+},
   body: {
     flex: 1,
     padding: 10,
+    width: '90%',
+    alignSelf: 'center',
   },
   avatar: {
     width: 200,
@@ -108,5 +92,17 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignSelf: 'center',
     marginVertical: 30,
+  },
+  label: {
+    fontSize: 22,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+    marginVertical: 5,
+  },
+  labelData: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 5,
+    marginHorizontal: 10,
   },
 });
