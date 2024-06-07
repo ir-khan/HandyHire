@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     DrawerContentScrollView,
     DrawerItem,
@@ -8,22 +8,37 @@ import {
 import { Ionicons } from 'react-native-vector-icons';
 import { COLORS, IMGS, ROUTES } from '../constants';
 import AuthService from '../services/AuthService';
+import DatabaseService from '../services/DatabaseService';
 
 
 const CustomDrawer = (props) => {
-    const [worker, setWorker] = useState(false);
+
     const { navigation } = props;
 
-    //const navigation = useNavigation();
-    //console.log(props);
+    const [worker, setWorker] = useState(false);
+    const [avatarSource, setAvatarSource] = useState(IMGS.avatar);
+    const [userData, setUserData] = useState('');
 
     const authService = new AuthService();
+    const dataBaseSevice = new DatabaseService();
+
+    useEffect(() => {
+
+        getUserData();
+
+    }, []);
+
+
+    const getUserData = async () => {
+        const data = await dataBaseSevice.getUserProfile();
+        if (data) {
+            setUserData(data);
+        }
+    };
 
     const logOut = async () => {
         const result = await authService.logout();
-        console.log(result);
         if (result == true) {
-            //navigation.navigate(ROUTES.LOGIN)
             navigation.reset({
                 index: 0,
                 routes: [{ name: ROUTES.LOGIN }],
@@ -34,7 +49,7 @@ const CustomDrawer = (props) => {
     return (
         <DrawerContentScrollView {...props}>
             <View style={styles.profileContainer}>
-                <Text style={styles.name}>Izn</Text>
+                <Text style={styles.name}>{userData.userName}</Text>
                 <Image source={IMGS.pfp} style={styles.image} />
             </View>
             <TouchableOpacity style={styles.workerTextContainer} onPress={() => { setWorker(!worker) }}>

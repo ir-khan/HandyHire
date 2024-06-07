@@ -28,11 +28,6 @@ const AuthNavigator = () => {
 
     useEffect(() => {
         checkUserLoggedIn();
-        // const unsubscribe = authService.authStateChangesListener((user) => {
-        //     setIsLoggedIn(!!user);
-        // });
-
-        // return () => unsubscribe();
     }, []);
 
     if (loading) {

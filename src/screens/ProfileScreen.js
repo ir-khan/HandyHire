@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CustomDrawerButton } from '../components';
 import { COLORS, IMGS, ROUTES } from '../constants';
 import { FontAwesome } from 'react-native-vector-icons';
@@ -8,20 +8,21 @@ import { AuthService, MediaService, DatabaseService } from '../services';
 const ProfileScreen = ({ navigation }) => {
 
   const [avatarSource, setAvatarSource] = useState(IMGS.avatar);
-  const [username, setUsername] = useState('');
+  const [userData, setUserData] = useState('');
 
-  const authService = new AuthService();
+  const dataBaseSevice = new DatabaseService();
 
-  const getUserID = async () => {
-    const user = await authService.getUser();
-    if (user) {
-      console.log(user);
-      setUsername(user);
+  useEffect(() => {
+    getUserData();
+
+  }, []);
+
+  const getUserData = async () => {
+    const data = await dataBaseSevice.getUserProfile();
+    if (data) {
+      setUserData(data);
     }
   };
-
-  getUserID();
-  console.log(username);
 
   const handleEditProfile = () => {
     navigation.navigate(ROUTES.EDITPROFILE);

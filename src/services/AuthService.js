@@ -12,10 +12,6 @@ class AuthService {
 
     #user;
 
-    getUser() {
-        return this.#user;
-    };
-
     async login(email, password) {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -72,7 +68,6 @@ class AuthService {
             if (user) {
                 const parsedUser = JSON.parse(user);
                 this.#user = UserProfile.fromJson(parsedUser);
-                console.log(this.#user);
                 return this.#user;
             }
         } catch (error) {

@@ -1,14 +1,15 @@
 import { database } from "../firebase";
-import { doc, setDoc, getDocs, collection } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection } from "firebase/firestore";
 import { UserProfile } from '../models';
-
-
+import AuthService from "./AuthService";
 class DatabaseService {
 
     #usersCollection;
+    authService;
 
     constructor() {
         this.#setupCollectionReferences();
+        authService = new AuthService();
     }
 
     #setupCollectionReferences() {
@@ -27,16 +28,22 @@ class DatabaseService {
         }
     }
 
-    async getUserProfile(uid) {
+    async getUserProfile() {
         try {
-            const userDoc = doc(this.#usersCollection, uid);
-            const docSnapshot = await getDoc(userDoc);
-            if (docSnapshot.exists()) {
-                const userData = docSnapshot.data();
-                const userProfile = UserProfile.fromJson(userData);
-                return userProfile;
+            const user = await authService.getCurrentUser();
+            if (user) {
+                const userDoc = doc(this.#usersCollection, user.uid);
+                const docSnapshot = await getDoc(userDoc);
+                if (docSnapshot.exists()) {
+                    const userData = docSnapshot.data();
+                    const userProfile = UserProfile.fromJson(userData);
+                    return userProfile;
+                } else {
+                    console.error("User profile does not exist");
+                    return null;
+                }
             } else {
-                console.error("User profile does not exist");
+                console.error("User does not exist");
                 return null;
             }
         } catch (error) {
