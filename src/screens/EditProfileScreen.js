@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.white,
         paddingBottom: 13,
         paddingHorizontal: 5,
+        elevation: 3,
     },
     appBarText: {
         fontSize: 30,
